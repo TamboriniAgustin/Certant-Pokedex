@@ -1,0 +1,1 @@
+* Simplemente se modeló al usuario en esta iteración. Cada pokemon tendrá un único dueño.

@@ -1,0 +1,12 @@
+* Tomé la decisión de representar como objetos primitivos (String) a las habilidades y 
+  los tipos debido a que por el alcance del problema no tendrán mayor utilidad que 
+  mostrarse en pantalla. Una posible alternativa es tener un Enum con todos los tipos 
+  posibles para un pokemon evitando inconsistencias en el manejo de Strings (para las 
+  habilidades no lo creo necesario). Probablemente habrá que reificar a las habilidades 
+  y los tipos cuando el sistema continue evolucionando para aprovechar situaciones dónde 
+  se necesite del polimorfismo, pero en este caso excede a los requerimientos solicitados.
+
+* Se genera un repositorio de pokemones donde estarán almacenados todos aquellos que 
+  estén registrados en la base de datos.
+
+* La clase Base de Datos será una clase global o singleton.
