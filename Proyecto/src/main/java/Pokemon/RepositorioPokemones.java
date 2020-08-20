@@ -22,16 +22,27 @@ public class RepositorioPokemones {
 
     public void actualizarPokemones(){
         pokemones = new BaseDeDatos().getPokemones();
+        this.obtenerEvoluciones();
     }
 
     public List<Pokemon> getPokemonesFromDB(){
         return pokemones;
     }
     public Pokemon getPokemonFromDB(String nombrePokemon){
-        if(!pokemones.stream().anyMatch(pokemon -> pokemon.getNombre() == nombrePokemon)) throw new PokemonNoEncontradoException();
-        return pokemones.stream().filter(pokemon -> pokemon.getNombre() == nombrePokemon).collect(Collectors.toList()).get(0);
+        if(pokemones.stream().noneMatch(pokemon -> pokemon.getNombre().equals(nombrePokemon))) throw new PokemonNoEncontradoException();
+        return pokemones.stream().filter(pokemon -> pokemon.getNombre().equals(nombrePokemon)).collect(Collectors.toList()).get(0);
     }
     public List<Pokemon> getPokemonesFromUsuario(Usuario usuario){
-        return pokemones.stream().filter(pokemon -> pokemon.getDuenio() == usuario).collect(Collectors.toList());
+        return pokemones.stream().filter(pokemon -> usuario.getNombre().equalsIgnoreCase(pokemon.getDuenio().getNombre())).collect(Collectors.toList());
+    }
+    private void obtenerEvoluciones(){
+        pokemones.forEach(
+                pokemon -> {
+                    pokemon.getEvoluciones().clear();
+                    new BaseDeDatos().getEvolucionesPokemon(pokemon.getNombre()).forEach(
+                            evolucion -> pokemon.evoluciones.add(this.getPokemonFromDB(evolucion.getNombre()))
+                    );
+                }
+        );
     }
 }

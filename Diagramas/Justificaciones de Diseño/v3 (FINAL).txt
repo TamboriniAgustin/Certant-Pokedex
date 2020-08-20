@@ -1,0 +1,7 @@
+* Se ha propuesto un borrador tanto para los usuarios como para los pokemones para facilitar el testing.
+
+* En el testing no se han hecho conexiones con la base de datos real, sino que se ha usado un repositorio Mock donde se simula la funcionalidad. Esto se debe a que no queremos que los diversos estados en que se encuentre la base de datos en cierto momento afecte nuestros tests, ya que perderían consistencia.
+
+* Se eliminaron los tipos de usuario, ya no se creyeron convenientes.
+
+* Se han realizado algunos cambios estructurales en la base de datos.

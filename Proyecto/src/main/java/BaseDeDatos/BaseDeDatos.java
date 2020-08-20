@@ -5,11 +5,9 @@ import Excepciones.NoSePudoConectarConLaBaseDeDatosException;
 import Pokemon.Pokemon;
 import Usuario.Usuario;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class BaseDeDatos {
@@ -17,10 +15,11 @@ public class BaseDeDatos {
 
     public BaseDeDatos(){
         try {
-            String connectionUrl = "jdbc:sqlserver://;database=Pokedex;integratedSecurity=true;";
+            String connectionUrl = "jdbc:sqlserver://DESKTOP-F0C0LJS\\SQLEXPRESS:53948;database=Pokedex;user=sa;password=gestiondedatos";
             this.connection = DriverManager.getConnection(connectionUrl);
         }
-        catch(Exception unaExcepcion) {
+        catch(SQLException unaExcepcion) {
+            System.out.println(unaExcepcion.getMessage());
             throw new NoSePudoConectarConLaBaseDeDatosException();
         }
     }
@@ -29,7 +28,7 @@ public class BaseDeDatos {
         boolean estadoLogin = false;
 
         try {
-            String sql = "SELECT * FROM usuario WHERE usuario_nombre = " + nombre + " AND usuario_password = " + password;
+            String sql = "SELECT * FROM usuario WHERE usuario_nombre = '" + nombre + "' AND usuario_password = '" + password + "'";
             Statement statement = connection.createStatement();
             ResultSet resultados = statement.executeQuery(sql);
             while(resultados.next()) {
@@ -46,7 +45,7 @@ public class BaseDeDatos {
         String password = usuario.getPassword();
 
         try{
-            String sql = "INSERT INTO usuario(usuario_nombre, usuario_password) VALUES(" + nombre + ", " + password + ")";
+            String sql = "INSERT INTO usuario(usuario_nombre, usuario_password) VALUES('" + nombre + "', '" + password + "')";
             Statement statement = connection.createStatement();
             statement.executeUpdate(sql);
         } catch (Exception unaExcepcion){
@@ -81,7 +80,7 @@ public class BaseDeDatos {
         List<String> tipos = new ArrayList();
 
         try {
-            String sql = "SELECT * FROM tipo_pokemon WHERE nombre_pokemon = " + pokemon;
+            String sql = "SELECT * FROM tipo_pokemon WHERE nombre_pokemon = '" + pokemon + "'";
             Statement statement = connection.createStatement();
             ResultSet resultados = statement.executeQuery(sql);
             while(resultados.next()) {
@@ -97,7 +96,7 @@ public class BaseDeDatos {
         List<String> habilidades = new ArrayList();
 
         try {
-            String sql = "SELECT * FROM habilidad_pokemon WHERE nombre_pokemon = " + pokemon;
+            String sql = "SELECT * FROM habilidad_pokemon WHERE nombre_pokemon = '" + pokemon + "'";
             Statement statement = connection.createStatement();
             ResultSet resultados = statement.executeQuery(sql);
             while(resultados.next()) {
@@ -109,22 +108,22 @@ public class BaseDeDatos {
 
         return habilidades;
     }
-    private List<Pokemon> getEvolucionesPokemon(String pokemon){
+    public List<Pokemon> getEvolucionesPokemon(String pokemon){
         List<Pokemon> evolucionesObtenidas = new ArrayList();
 
         try {
-            String sql = "SELECT pokemon_nombre, pokemon_nivel, usuario_nombre, usuario_password FROM evolucion_pokemon ep1 JOIN pokemon p1 ON ep1.nombre_pokemon = p1.pokemon_nombre FULL JOIN usuario u1 ON p1.pokemon_duenio = u1.usuario_nombre WHERE nombre_pokemon = '" + pokemon + "'";
+            String sql = "SELECT nombre_evolucion, pokemon_nivel, usuario_nombre, usuario_password FROM evolucion_pokemon ep1 JOIN pokemon p1 ON ep1.nombre_pokemon = p1.pokemon_nombre FULL JOIN usuario u1 ON p1.pokemon_duenio = u1.usuario_nombre WHERE nombre_pokemon = '" + pokemon + "'";
             Statement statement = connection.createStatement();
             ResultSet resultados = statement.executeQuery(sql);
             while(resultados.next()) {
-                String nombreEvolucion = resultados.getString("pokemon_nombre");
+                String nombreEvolucion = resultados.getString("nombre_evolucion");
                 int nivelEvolucion = resultados.getInt("pokemon_nivel");
                 Usuario duenioEvolucion = new Usuario(resultados.getString("usuario_nombre"), resultados.getString("usuario_password"));
                 List<String> tiposEvolucion = this.getTiposPokemon(nombreEvolucion);
                 List<String> habilidadesEvolucion = this.getHabilidadesPokemon(nombreEvolucion);
-                List<Pokemon> evolucionesEvolucion = this.getEvolucionesPokemon(nombreEvolucion);
 
-                evolucionesObtenidas.add(new Pokemon(nombreEvolucion, tiposEvolucion, nivelEvolucion, habilidadesEvolucion, evolucionesEvolucion, duenioEvolucion));
+                //No se añaden las evoluciones al objeto, ya que se genera un stack overflow al usar la recursividad pero de todas formas no se generan inconsitencias
+                evolucionesObtenidas.add(new Pokemon(nombreEvolucion, tiposEvolucion, nivelEvolucion, habilidadesEvolucion, Arrays.asList(), duenioEvolucion));
             }
         } catch(Exception unaExcepcion){
             throw new NoPudoEjecutarseLaConsultaException();
@@ -135,13 +134,13 @@ public class BaseDeDatos {
     public void insertarPokemon(Pokemon pokemon){
         String nombre = pokemon.getNombre();
         int nivel = pokemon.getNivel();
-        Usuario duenio = pokemon.getDuenio();
 
         try{
-            String sql = "INSERT INTO pokemones(pokemon_nombre, pokemon_nivel, pokemon_duenio) VALUES(" + nombre + ", " + nivel + ", " + duenio.getNombre() + ")";
+            String sql = "INSERT INTO pokemon(pokemon_nombre, pokemon_nivel, pokemon_duenio) VALUES('" + nombre + "', " + nivel + ", null)";
             Statement statement = connection.createStatement();
             statement.executeUpdate(sql);
-        } catch (Exception unaExcepcion){
+        } catch (SQLException unaExcepcion){
+            System.out.println(unaExcepcion.getMessage());
             throw new NoPudoEjecutarseLaConsultaException();
         }
 
@@ -160,10 +159,11 @@ public class BaseDeDatos {
         Usuario duenio = pokemon.getDuenio();
 
         try{
-            String sql = "UPDATE pokemones SET pokemon_nombre = '" + nombre + "', pokemon_nivel = " + nivel + ", pokemon_duenio = " + duenio.getNombre() + " WHERE pokemon_nombre = '" + nombre + "'";
+            String sql = "UPDATE pokemon SET pokemon_nivel = " + nivel + ", pokemon_duenio = '" + duenio.getNombre() + "' WHERE pokemon_nombre = '" + nombre + "'";
             Statement statement = connection.createStatement();
             statement.executeUpdate(sql);
-        } catch (Exception unaExcepcion){
+        } catch (SQLException unaExcepcion){
+            System.out.println(unaExcepcion.getMessage());
             throw new NoPudoEjecutarseLaConsultaException();
         }
     }
@@ -172,7 +172,7 @@ public class BaseDeDatos {
         tipos.forEach(
                 tipo -> {
                     try{
-                        String sql = "INSERT INTO tipo_pokemon(tipo_pokemon, nombre_pokemon) VALUES(" + tipo + ", " + pokemon + ")";
+                        String sql = "INSERT INTO tipo_pokemon(tipo_pokemon, nombre_pokemon) VALUES('" + tipo + "', '" + pokemon + "')";
                         Statement statement = connection.createStatement();
                         statement.executeUpdate(sql);
                     } catch (Exception unaExcepcion){
@@ -195,7 +195,7 @@ public class BaseDeDatos {
         habilidades.forEach(
                 habilidad -> {
                     try{
-                        String sql = "INSERT INTO habilidad_pokemon(habilidad_nombre, nombre_pokemon) VALUES(" + habilidad + ", " + pokemon + ")";
+                        String sql = "INSERT INTO habilidad_pokemon(habilidad_nombre, nombre_pokemon) VALUES('" + habilidad + "', '" + pokemon + "')";
                         Statement statement = connection.createStatement();
                         statement.executeUpdate(sql);
                     } catch (Exception unaExcepcion){
@@ -220,10 +220,11 @@ public class BaseDeDatos {
                     String nombre = evolucion.getNombre();
 
                     try{
-                        String sql = "INSERT INTO evolucion_pokemon(nombre_evolucion, nombre_pokemon) VALUES(" + nombre + ", " + pokemon + ")";
+                        String sql = "INSERT INTO evolucion_pokemon(nombre_evolucion, nombre_pokemon) VALUES('" + nombre + "', '" + pokemon + "')";
                         Statement statement = connection.createStatement();
                         statement.executeUpdate(sql);
-                    } catch (Exception unaExcepcion){
+                    } catch (SQLException unaExcepcion){
+                        System.out.println(unaExcepcion.getMessage());
                         throw new NoPudoEjecutarseLaConsultaException();
                     }
                 }

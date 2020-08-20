@@ -19,14 +19,8 @@ public class BorradorPokemon {
         this.nombre = nombre;
     }
 
-    public void modificarNombre(String nuevoNombre){
-        this.nombre = nuevoNombre;
-    }
     public void agregarTipo(String tipo){
         this.tipos.add(tipo);
-    }
-    public void removerTipo(String tipo){
-        this.tipos.remove(tipo);
     }
     public void setearNivel(int nivel){
         this.nivel = nivel;
@@ -34,17 +28,8 @@ public class BorradorPokemon {
     public void agregarHabilidad(String habilidad){
         this.habilidades.add(habilidad);
     }
-    public void removerHabilidad(String habilidad){
-        this.habilidades.remove(habilidad);
-    }
     public void nuevaEvolucion(Pokemon pokemon){
         this.evoluciones.add(pokemon);
-    }
-    public void eliminarEvolucion(Pokemon pokemon){
-        this.evoluciones.remove(pokemon);
-    }
-    public void nuevoDuenio(Usuario usuario){
-        this.duenio = usuario;
     }
 
     public Pokemon crearPokemon(){

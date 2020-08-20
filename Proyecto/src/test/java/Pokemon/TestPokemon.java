@@ -40,7 +40,7 @@ public class TestPokemon {
     public void obtenerEvolucionesDePokemon(){
         String pokemonBuscado = "Pokemon5";
         Pokemon pokemonObtenido = pokemonesDB.getPokemonFromDB(pokemonBuscado);
-        Pokemon pokemonEsperado = new Pokemon("Pokemon4", Arrays.asList("Psiquico"), 1, Arrays.asList("Leer Mentes"), Arrays.asList());
+        Pokemon pokemonEsperado = new Pokemon("Pokemon4", Arrays.asList("Psiquico"), 1, Arrays.asList("Leer Mentes"), Arrays.asList(), null);
 
         assertEquals(1, pokemonesDB.getPokemonFromDB(pokemonBuscado).getEvoluciones().size());
     }
@@ -80,12 +80,7 @@ public class TestPokemon {
     //Testing creación de pokemones
     @Test
     public void creacionDeNuevoPokemon(){
-        BorradorPokemon creadorPokemon11 = new BorradorPokemon("Pokemon11");
-        creadorPokemon11.agregarTipo("Desconocido");
-        creadorPokemon11.setearNivel(12);
-        creadorPokemon11.agregarHabilidad("Destruir planetas");
-        creadorPokemon11.nuevaEvolucion(pokemonesDB.getPokemonFromDB("Pokemon10"));
-        Pokemon pokemon11 = creadorPokemon11.crearPokemon();
+        Pokemon pokemon11 = new Pokemon("Pokemon11", Arrays.asList("Desconocido"), 12, Arrays.asList("Destruir planetas"), Arrays.asList(pokemonesDB.getPokemonFromDB("Pokemon10")), null);
 
         pokemonesDB.actualizarPokemones();
 
@@ -102,8 +97,8 @@ public class TestPokemon {
     @Test
     public void actualizacionDePokemon(){
         Pokemon pokemon3 = pokemonesDB.getPokemonFromDB("Pokemon3");
-        pokemon3.modificarNivel(6);
-        pokemon3.agregarHabilidad("Planear durante 30 segundos");
+        pokemon3.nivel = 6;
+        pokemon3.habilidades.add("Planear durante 30 segundos");
 
         pokemonesDB.actualizarPokemones();
 

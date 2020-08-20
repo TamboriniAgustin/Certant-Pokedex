@@ -11,9 +11,9 @@ import java.util.List;
 public class Pokemon {
     private String nombre;
     private List<String> tipos;
-    private int nivel;
-    private List<String> habilidades;
-    private List<Pokemon> evoluciones;
+    public int nivel;
+    public List<String> habilidades;
+    public List<Pokemon> evoluciones;
     private Usuario duenio;
 
     public Pokemon(String nombre, List<String> tipos, int nivel, List<String> habilidades, List<Pokemon> evoluciones, Usuario duenio){
@@ -34,47 +34,45 @@ public class Pokemon {
         return duenio;
     }
 
-    public void modificarNombre(String nuevoNombre){
-        this.nombre = nuevoNombre;
+    public void modificarNivel(int nuevoNivel) {
+        this.nivel = nuevoNivel;
+        new BaseDeDatos().modificarPokemon(this);
     }
-    public void modificarNivel(int nuevoNivel) { this.nivel = nuevoNivel; }
     public void nuevoDuenio(Usuario usuario){
         this.duenio = usuario;
-    }
-    public void guardarCambios(){
         new BaseDeDatos().modificarPokemon(this);
     }
 
     public void agregarTipo(String tipo){
-        new BaseDeDatos().insertarTiposPokemon(this.getNombre(), Arrays.asList(tipo));
         tipos.add(tipo);
+        new BaseDeDatos().insertarTiposPokemon(this.getNombre(), Arrays.asList(tipo));
     }
     public void removerTipo(String tipo){
         if(tipos.contains(tipo)) {
-            new BaseDeDatos().eliminarTipoPokemon(this.getNombre(), tipo);
             tipos.remove(tipo);
+            new BaseDeDatos().eliminarTipoPokemon(this.getNombre(), tipo);
         }
     }
 
     public void agregarHabilidad(String habilidad){
-        new BaseDeDatos().insertarHabilidadesPokemon(this.getNombre(), Arrays.asList(habilidad));
         habilidades.add(habilidad);
+        new BaseDeDatos().insertarHabilidadesPokemon(this.getNombre(), Arrays.asList(habilidad));
     }
     public void removerHabilidad(String habilidad){
         if(habilidades.contains(habilidad)) {
-            new BaseDeDatos().eliminarHabilidadPokemon(this.getNombre(), habilidad);
             habilidades.remove(habilidad);
+            new BaseDeDatos().eliminarHabilidadPokemon(this.getNombre(), habilidad);
         }
     }
 
     public void nuevaEvolucion(Pokemon pokemon){
-        new BaseDeDatos().insertarEvolucionesPokemon(this.getNombre(), Arrays.asList(pokemon));
         this.evoluciones.add(pokemon);
+        new BaseDeDatos().insertarEvolucionesPokemon(this.getNombre(), Arrays.asList(pokemon));
     }
     public void eliminarEvolucion(Pokemon pokemon){
         if(evoluciones.contains(pokemon)) {
-            new BaseDeDatos().eliminarEvolucionPokemon(this.getNombre(), pokemon.getNombre());
             this.evoluciones.remove(pokemon);
+            new BaseDeDatos().eliminarEvolucionPokemon(this.getNombre(), pokemon.getNombre());
         }
     }
 }
